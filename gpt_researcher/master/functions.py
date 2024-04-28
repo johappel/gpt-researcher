@@ -1,6 +1,7 @@
 import asyncio
 import json
-
+import re
+from pprint import pprint
 import markdown
 
 from gpt_researcher.master.prompts import *
@@ -89,7 +90,9 @@ async def get_sub_queries(query: str, agent_role_prompt: str, cfg, parent_query:
         sub_queries: List of sub queries
 
     """
+    
     max_research_iterations = cfg.max_iterations if cfg.max_iterations else 1
+    
     response = await create_chat_completion(
         model=cfg.smart_llm_model,
         messages=[
@@ -98,7 +101,22 @@ async def get_sub_queries(query: str, agent_role_prompt: str, cfg, parent_query:
         temperature=0,
         llm_provider=cfg.llm_provider
     )
-    sub_queries = json.loads(response)
+    response_array = extract_array_from_text(response)
+
+    print(f"Subqueries response: {response_array}")
+    #pprint(response)
+    
+    #sub_queries = json.dumps(response)
+    sub_queries = json.loads(response_array)
+    #print(f"Subqueries response: {sub_queries}")
+    #pprint(sub_queries)
+    
+    # try:
+    #     sub_queries = json.loads(response)
+    # except json.JSONDecodeError as e:
+    #     print(f'Fehler beim Decodieren der JSON-Zeichenfolge: {e}')
+    #     sub_queries = json.dumps(response)
+    
     return sub_queries
 
 
@@ -232,8 +250,9 @@ async def generate_report(
     if report_type == "subtopic_report":
         content = f"{generate_prompt(query, existing_headers, main_topic, context, cfg.report_format, cfg.total_words)}"
     else:
-        content = (
-            f"{generate_prompt(query, context, cfg.report_format, cfg.total_words)}")
+# Dann rufe diese sichere Funktion auf
+        #content = f"{safe_generate_prompt(query, context, cfg.report_format, cfg.total_words)}"
+        content = (f"{generate_prompt(query, context, cfg.report_format, cfg.total_words)}")
 
     try:
         report = await create_chat_completion(
@@ -374,3 +393,32 @@ def add_source_urls(report_markdown: str, visited_urls: set):
     except Exception as e:
         print(f"Encountered exception in adding source urls : {e}")
         return report_markdown
+    
+def extract_array_from_text(text):
+    try:
+        # Versuche, den Text als JSON zu parsen
+        data = json.loads(text)
+        if isinstance(data, list):
+            # Escaping der inneren Anführungszeichen in jedem Element
+            escaped_data = [element.replace('"', '\\"') for element in data]
+            return json.dumps(escaped_data)
+    except json.JSONDecodeError:
+        # Regex-Suche nach einem Array im Text
+        array_match = re.search(r"\[.*?\]", text, re.DOTALL)
+        if array_match:
+            # Extrahiere das Array
+            array_string = array_match.group(0)
+            # Ersetze innere Anführungszeichen in jedem Element
+            escaped_array_string = re.sub(r'(?<!\\)"(.*?)"(?=[,\]])', lambda m: '"' + m.group(1).replace('"', '\\"') + '"', array_string)
+            return escaped_array_string
+    
+    return None  # Kein Array gefunden oder Text ist kein Array
+
+def safe_generate_prompt(query, context, report_format, total_words):
+    if callable(generate_prompt):
+        return generate_prompt(query, context, report_format, total_words)
+    else:
+        print("Fehler: generate_prompt ist kein Funktionsaufruf, sondern ein:", type(generate_prompt))
+        return None
+
+

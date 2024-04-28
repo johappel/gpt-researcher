@@ -7,6 +7,8 @@ playwright
 openai
 python-dotenv
 pyyaml
+selenium
+webdriver-manager
 uvicorn
 pydantic
 fastapi
@@ -27,4 +29,6 @@ mistune
 python-docx
 htmldocx
 langchain-google-genai
+langchain_groq
+sentence-transformers
 lxml[html_clean]

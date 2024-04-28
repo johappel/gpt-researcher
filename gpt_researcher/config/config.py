@@ -41,3 +41,24 @@ class Config:
         for key, value in config.items():
             self.__dict__[key] = value
 
+    def __str__(self):
+        config_str = f"retriever: {self.retriever}\n"
+        config_str += f"embedding_provider: {self.embedding_provider}\n"
+        config_str += f"llm_provider: {self.llm_provider}\n"
+        config_str += f"fast_llm_model: {self.fast_llm_model}\n"
+        config_str += f"smart_llm_model: {self.smart_llm_model}\n"
+        config_str += f"fast_token_limit: {self.fast_token_limit}\n"
+        config_str += f"smart_token_limit: {self.smart_token_limit}\n"
+        config_str += f"browse_chunk_max_length: {self.browse_chunk_max_length}\n"
+        config_str += f"summary_token_limit: {self.summary_token_limit}\n"
+        config_str += f"temperature: {self.temperature}\n"
+        config_str += f"user_agent: {self.user_agent}\n"
+        config_str += f"max_search_results_per_query: {self.max_search_results_per_query}\n"
+        config_str += f"memory_backend: {self.memory_backend}\n"
+        config_str += f"total_words: {self.total_words}\n"
+        config_str += f"report_format: {self.report_format}\n"
+        config_str += f"max_iterations: {self.max_iterations}\n"
+        config_str += f"agent_role: {self.agent_role}\n"
+        config_str += f"scraper: {self.scraper}\n"
+        config_str += f"max_subtopics: {self.max_subtopics}\n"
+        return config_str

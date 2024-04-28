@@ -18,6 +18,12 @@ from .validators import Subtopics
 
 def get_provider(llm_provider):
     match llm_provider:
+        case "ollama":
+            from ..llm_provider import OllamaProvider
+            llm_provider = OllamaProvider
+        case "groq":
+            from ..llm_provider import GroqProvider
+            llm_provider = GroqProvider
         case "openai":
             from ..llm_provider import OpenAIProvider
             llm_provider = OpenAIProvider

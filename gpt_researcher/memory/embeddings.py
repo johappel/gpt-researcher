@@ -8,8 +8,9 @@ class Memory:
         _embeddings = None
         match embedding_provider:
             case "ollama":
-                from langchain.embeddings import OllamaEmbeddings
-                _embeddings = OllamaEmbeddings(model="llama2")
+                from langchain_community.embeddings import OllamaEmbeddings
+                _embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+                #_embeddings = OllamaEmbeddings(model="llama2")
             case "openai":
                 from langchain_openai import OpenAIEmbeddings
                 _embeddings = OpenAIEmbeddings()
@@ -17,8 +18,8 @@ class Memory:
                 from langchain_openai import AzureOpenAIEmbeddings
                 _embeddings = AzureOpenAIEmbeddings(deployment=os.environ["AZURE_EMBEDDING_MODEL"], chunk_size=16)
             case "huggingface":
-                from langchain.embeddings import HuggingFaceEmbeddings
-                _embeddings = HuggingFaceEmbeddings()
+                from langchain_community.embeddings import HuggingFaceEmbeddings
+                _embeddings = HuggingFaceEmbeddings(model_name=os.environ["HUGGINGFACE_EMBEDDING_MODEL"],model_kwargs = {'device': 'cpu'}, encode_kwargs = {'normalize_embeddings': False})
 
             case _:
                 raise Exception("Embedding provider not found.")
