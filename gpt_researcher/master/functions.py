@@ -102,21 +102,9 @@ async def get_sub_queries(query: str, agent_role_prompt: str, cfg, parent_query:
         llm_provider=cfg.llm_provider
     )
     response_array = extract_array_from_text(response)
-
-    print(f"Subqueries response: {response_array}")
-    #pprint(response)
     
-    #sub_queries = json.dumps(response)
     sub_queries = json.loads(response_array)
-    #print(f"Subqueries response: {sub_queries}")
-    #pprint(sub_queries)
-    
-    # try:
-    #     sub_queries = json.loads(response)
-    # except json.JSONDecodeError as e:
-    #     print(f'Fehler beim Decodieren der JSON-Zeichenfolge: {e}')
-    #     sub_queries = json.dumps(response)
-    
+        
     return sub_queries
 
 
